@@ -3,14 +3,15 @@ const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const { app } = require("../app");
+const endpointsData = require("../endpoints.json");
 
 beforeEach(async () => {
-    await seed(testData);
-  });
+  await seed(testData);
+});
 
-  afterAll(async () => {
-    await db.end();
-  });
+afterAll(async () => {
+  await db.end();
+});
 
 describe("GET /api/topics", () => {
   test("200: GET response with an array of topic objects", () => {
@@ -26,6 +27,18 @@ describe("GET /api/topics", () => {
             description: expect.any(String),
           });
         });
+      });
+  });
+});
+
+describe("/api", () => {
+  test("200 GET: response with an object describing all other endpoints available", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpointsData).toBeInstanceOf(Object);
+        expect(body.endpointsData).toEqual(endpointsData);
       });
   });
 });
