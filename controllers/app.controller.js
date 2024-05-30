@@ -4,6 +4,7 @@ const {
   selectArticles,
   selectCommentsByArticleId,
   addCommentModel,
+  updateArticleByIdModel
 } = require("../models/app.models");
 
 const endpointsData = require("../endpoints.json");
@@ -56,6 +57,16 @@ exports.addComment= (req, res, next) =>{
   return addCommentModel(username, body, article_id)
   .then((comment)=>{
     res.status(201).send({comment})
+  })
+  .catch(next)
+}
+
+exports.updateArticleById=(req, res, next)=>{
+  const {inc_votes}= req.body
+  const {article_id}= req.params
+  return updateArticleByIdModel(article_id, inc_votes)
+  .then((article)=>{
+    res.status(200).send({article})
   })
   .catch(next)
 }
