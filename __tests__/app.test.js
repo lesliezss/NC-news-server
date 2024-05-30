@@ -249,3 +249,29 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/comments/:comment_id",()=>{
+  test("204 DELETE: delete the given comment by comment_id",()=>{
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204)
+  })
+  test('status 404: responds with an error when trying to delete a comment that does not exist', () => {
+    return request(app)
+        .delete("/api/comments/100")
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe('No comment found on comment id: 100');
+        });
+});
+
+    test('status 400: responds with an error when given an invalid comment_id', () => {
+    return request(app)
+        .delete("/api/comments/notAnId")
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid Input');
+        });
+});
+});
+
+

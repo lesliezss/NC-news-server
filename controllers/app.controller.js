@@ -4,7 +4,8 @@ const {
   selectArticles,
   selectCommentsByArticleId,
   addCommentModel,
-  updateArticleByIdModel
+  updateArticleByIdModel,
+  deleteCommentByIdModel
 } = require("../models/app.models");
 
 const endpointsData = require("../endpoints.json");
@@ -68,5 +69,14 @@ exports.updateArticleById=(req, res, next)=>{
   .then((article)=>{
     res.status(200).send({article})
   })
+  .catch(next)
+}
+
+exports.deleteCommentById =(req, res, next)=>{
+  const {comment_id} = req.params
+  return deleteCommentByIdModel(comment_id)
+  .then((result) => {
+    res.status(204).send();
+})
   .catch(next)
 }
