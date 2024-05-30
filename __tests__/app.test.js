@@ -152,3 +152,65 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id/comments",()=>{
+  test("201 POST: add a comment for an article, responds with the posted comment",()=>{
+    const newComment = {
+      username: "butter_bridge", 
+      body: "Good!"
+    }
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send(newComment)
+    .expect(201)
+    .then(({body})=>{
+      expect(body.comment).toMatchObject({
+            body: "Good!",
+            author: "butter_bridge",
+            article_id: 1,
+            votes: 0,
+            created_at: expect.any(String)
+      })
+    })
+  })
+  test("status 404: responds with an error message when passed a username that's not in database",()=>{
+    const newComment = {
+      username: "test_username", 
+      body: "Good!"
+    }
+    return request(app)
+    .post("/api/articles/1/comments")
+    .send(newComment)
+    .expect(404)
+    .then(({body})=>{
+      expect(body.msg).toBe("Username not found")
+    })
+
+  })
+  test("status 400: responds with an error message when passed an invalid article id",()=>{
+    const newComment = {
+      username: "butter_bridge", 
+      body: "Good!"
+    }
+    return request(app)
+    .post("/api/articles/notAnId/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({body})=>{
+      expect(body.msg).toBe("Invalid Input")
+    })
+  })
+  test("status 404: responds with an error message when passed an article id that does not in the database",()=>{
+    const newComment = {
+      username: "butter_bridge", 
+      body: "Good!"
+    }
+    return request(app)
+    .post("/api/articles/100/comments")
+    .send(newComment)
+    .expect(404)
+    .then(({body})=>{
+      expect(body.msg).toBe("No article found for article id: 100")
+    })
+  })
+})
