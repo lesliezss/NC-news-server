@@ -49,4 +49,24 @@ function selectArticles() {
     });
 }
 
-module.exports = { selectTopics, selectArticleById, selectArticles };
+function selectCommentsByArticleId (article_id){
+return db.query(`
+SELECT * 
+FROM comments 
+WHERE article_id = $1`, [article_id])
+.then((result)=>{
+  const comment = result.rows[0]
+if(!comment){
+  return Promise.reject({
+    status:404,
+    msg: `No comment found for article id: ${article_id}`
+  })
+}
+else {
+  console.log(result.rows)
+  return result.rows}
+})
+}
+
+
+module.exports = { selectTopics, selectArticleById, selectArticles, selectCommentsByArticleId };

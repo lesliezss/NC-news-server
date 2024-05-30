@@ -50,7 +50,7 @@ describe("/api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.article).toMatchObject({
-        article_id: expect.any(Number),
+          article_id: expect.any(Number),
           title: expect.any(String),
           topic: expect.any(String),
           author: expect.any(String),
@@ -84,36 +84,71 @@ describe("/api/articles/:article_id", () => {
 describe("/api/articles", () => {
   test("200 GET: responds with an articles array of all article objects", () => {
     return request(app)
-    .get("/api/articles")
-    .expect(200)
-    .then(({body})=>{
-        expect(body.articles).toBeInstanceOf(Array)
-        expect(body.articles[0].comment_count).toBe("2")
-        expect(body.articles[0]).toEqual(
-            {
-                article_id: 3,
-                title: 'Eight pug gifs that remind me of mitch',
-                topic: 'mitch',
-                author: 'icellusedkars',
-                created_at: "2020-11-03T09:12:00.000Z",
-                votes: 0,
-                article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
-                comment_count: '2'
-              },
-        )
-        body.articles.forEach((article)=>{
-            expect(article).toMatchObject(
-                {   article_id: expect.any(Number),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    author: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                    article_img_url:expect.any(String),
-                    comment_count: expect.any(String)
-                  },
-            )
-        })
-    })
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles[0].comment_count).toBe("2");
+        expect(body.articles[0]).toEqual({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: "2",
+        });
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("200 GET: responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        body.comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("status 400: responds with an error message when passed an invalid id", () => {
+    return request(app)
+      .get("/api/articles/NotAnId/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid Input");
+      });
+  });
+  test("status 404: responds with an error message when passed an id that's not in the database", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No comment found for article id: 100");
+      });
   });
 });
