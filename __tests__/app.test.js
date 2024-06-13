@@ -2,7 +2,7 @@ const testData = require("../db/data/test-data/index");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
-const { app } = require("../app");
+const app = require("../app");
 const endpointsData = require("../endpoints.json");
 
 beforeEach(async () => {
